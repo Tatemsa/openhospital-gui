@@ -31,10 +31,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -126,11 +123,14 @@ public class MovStockBrowser extends ModalJFrame {
 
 	private final JFrame myFrame;
 	private JButton filterButton;
+	private JButton nextButton;
+	private JButton prevButton;
 	private JButton resetButton;
 	private JCheckBox jCheckBoxKeepFilter;
 	private JComboBox medicalBox;
 	private JComboBox medicalTypeBox;
 	private JComboBox movementTypeBox;
+	private JComboBox pagesCombo;
 	private JComboBox wardBox;
 	private GoodDateChooser movDateFrom;
 	private GoodDateChooser movDateTo;
@@ -138,9 +138,13 @@ public class MovStockBrowser extends ModalJFrame {
 	private GoodDateChooser lotPrepTo;
 	private GoodDateChooser lotDueFrom;
 	private GoodDateChooser lotDueTo;
+	private JLabel underLabel;
 	private JTable movTable;
 	private JTable jTableTotal;
 	private int totalQti;
+	private int pages = 0;
+	private int currentPage = 0;
+	private int PAGE_SIZE = 37;
 	private BigDecimal totalAmount;
 	private MovBrowserModel model;
 	private List<Movement> moves;
@@ -227,6 +231,10 @@ public class MovStockBrowser extends ModalJFrame {
 
 	private JPanel getButtonPanel() {
 		JPanel buttonPanel = new JPanel(new WrapLayout());
+		buttonPanel.add(getPrevButton());
+		buttonPanel.add(getPagesCombo());
+		buttonPanel.add(getUnderLabel());
+		buttonPanel.add(getNextButton());
 		if (MainMenu.checkUserGrants("btnpharmstockcharge")) {
 			buttonPanel.add(getChargeButton());
 		}
@@ -242,6 +250,54 @@ public class MovStockBrowser extends ModalJFrame {
 		buttonPanel.add(getStockLedgerButton());
 		buttonPanel.add(getCloseButton());
 		return buttonPanel;
+	}
+
+	private JButton getNextButton(){
+		if(nextButton == null){
+			nextButton = new JButton(">");
+			//nextButton.setEnabled(false);
+			nextButton.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					pages++;
+					underLabel.setText("/ " + pages + " pages");
+				}
+			});
+		}
+		return nextButton;
+	}
+
+	private JButton getPrevButton(){
+		if(prevButton == null){
+			prevButton = new JButton("<");
+			//prevButton.setEnabled(false);
+			prevButton.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					pages--;
+					underLabel.setText("/ " + pages + " pages");
+				}
+			});
+
+		}
+		return prevButton;
+	}
+
+	private JComboBox<String> getPagesCombo(){
+		if (pagesCombo == null){
+			pagesCombo = new JComboBox<>();
+			pagesCombo.addItem("2rtr");
+			pagesCombo.addItem("test");
+		}
+		return pagesCombo;
+	}
+
+	private JLabel getUnderLabel(){
+		if (underLabel == null){
+			underLabel = new JLabel("/ " + pages + " pages");
+			underLabel.setPreferredSize(new Dimension(60,30));
+		}
+		return underLabel;
 	}
 
 	private JButton getStockCardButton() {
