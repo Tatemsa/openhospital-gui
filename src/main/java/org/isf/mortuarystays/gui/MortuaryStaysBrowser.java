@@ -90,11 +90,11 @@ public class MortuaryStaysBrowser extends ModalJFrame implements MortuaryStaysLi
     private JScrollPane jScrollPane = null;
     private JTable table = null;
     private DefaultTableModel model = null;
-    private String[] pColums = { MessageBundle.getMessage("angal.mortuarystays.code.txt"),
-            MessageBundle.getMessage("angal.mortuarystays.name.txt"),
-            MessageBundle.getMessage("angal.mortuarystays.description.txt"),
-            MessageBundle.getMessage("angal.mortuarystays.dmin.txt"),
-            MessageBundle.getMessage("angal.mortuarystays.dmax.txt")};
+    private String[] pColums = { MessageBundle.getMessage("angal.mortuarystays.code.col"),
+            MessageBundle.getMessage("angal.mortuarystays.name.col"),
+            MessageBundle.getMessage("angal.mortuarystays.description.col"),
+            MessageBundle.getMessage("angal.mortuarystays.dmin.col"),
+            MessageBundle.getMessage("angal.mortuarystays.dmax.col")};
     private int[] pColumwidth = {50, 80, 90, 30, 30};
     private Class[] pColumnClass = {String.class, String.class, String.class, int.class, int.class};
     private int selectedrow;

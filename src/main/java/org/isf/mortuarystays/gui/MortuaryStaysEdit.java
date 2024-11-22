@@ -305,14 +305,14 @@ public class MortuaryStaysEdit extends JDialog {
                     }
 
                 }
-                desc = descriptionTextField.getText().trim();
-                if (desc.isEmpty()) {
-                    MessageDialog.error(this, "angal.common.pleaseinsertavaliddescription.msg");
-                    return;
-                }
                 name = nameTextField.getText().trim();
                 if(name.isEmpty()){
                     MessageDialog.error(this, "angal.common.pleaseinsertavalidname.msg");
+                    return;
+                }
+                desc = descriptionTextField.getText().trim();
+                if (desc.isEmpty()) {
+                    MessageDialog.error(this, "angal.common.pleaseinsertavaliddescription.msg");
                     return;
                 }
                 try {
@@ -328,11 +328,11 @@ public class MortuaryStaysEdit extends JDialog {
                 try {
                     maxD = Integer.parseInt(maxDTextField.getText());
                 } catch (NumberFormatException f) {
-                    MessageDialog.error(this, "angal.mortuatystays.insertavalidmaxdnumber.msg");
+                    MessageDialog.error(this, "angal.mortuarystays.insertavalidmaxdnumber.msg");
                     return;
                 }
                 if (maxD < 0) {
-                    MessageDialog.error(this, "angal.mortuatystays.insertavalidmaxdnumber.msg");
+                    MessageDialog.error(this, "angal.mortuarystays.insertavalidmaxdnumber.msg");
                     return;
                 }
                 if(minD >= maxD){
