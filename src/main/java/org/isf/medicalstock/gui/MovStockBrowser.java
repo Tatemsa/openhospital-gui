@@ -101,6 +101,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.lgooddatepicker.zinternaltools.WrapLayout;
+import org.springframework.data.domain.Page;
 
 /**
  * MovStockBrowser - list medicals movement. Let the user search for movements and insert a new movement.
@@ -144,10 +145,10 @@ public class MovStockBrowser extends ModalJFrame {
 	private int totalQti;
 	private int pages = 0;
 	private int currentPage = 0;
-	private int PAGE_SIZE = 37;
+	private int PAGE_SIZE = 10;
 	private BigDecimal totalAmount;
 	private MovBrowserModel model;
-	private List<Movement> moves;
+	private Page<Movement> moves;
 	private String[] pColumns = {
 			MessageBundle.getMessage("angal.medicalstock.refno.col").toUpperCase(), // 1
 			MessageBundle.getMessage("angal.common.date.txt").toUpperCase(), // 2
@@ -194,7 +195,7 @@ public class MovStockBrowser extends ModalJFrame {
 	private SupplierBrowserManager supplierBrowserManager = Context.getApplicationContext().getBean(SupplierBrowserManager.class);
 	private WardBrowserManager wardBrowserManager = Context.getApplicationContext().getBean(WardBrowserManager.class);
 
-	public MovStockBrowser() {
+	public MovStockBrowser() throws OHServiceException {
 		myFrame = this;
 		setTitle(MessageBundle.getMessage("angal.medicalstock.stockmovementbrowser.title"));
 		try {
@@ -212,7 +213,7 @@ public class MovStockBrowser extends ModalJFrame {
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 	}
 
-	private JPanel getContentpane() {
+	private JPanel getContentpane() throws OHServiceException {
 		JPanel contentPane = new JPanel(new BorderLayout());
 		contentPane.add(getFilterPanel(), BorderLayout.WEST);
 		contentPane.add(getTablesPanel(), BorderLayout.CENTER);
@@ -229,7 +230,7 @@ public class MovStockBrowser extends ModalJFrame {
 		return GeneralData.AUTOMATICLOT_IN;
 	}
 
-	private JPanel getButtonPanel() {
+	private JPanel getButtonPanel() throws OHServiceException {
 		JPanel buttonPanel = new JPanel(new WrapLayout());
 		buttonPanel.add(getPrevButton());
 		buttonPanel.add(getPagesCombo());
@@ -259,8 +260,15 @@ public class MovStockBrowser extends ModalJFrame {
 			nextButton.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					pages++;
-					underLabel.setText("/ " + pages + " pages");
+					if(currentPage < 6) {
+						currentPage++;
+                        try {
+                            moves = movBrowserManager.getMovementsPageable(currentPage, PAGE_SIZE);
+                        } catch (OHServiceException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                        pagesCombo.setSelectedItem(currentPage);
+					}
 				}
 			});
 		}
@@ -270,12 +278,18 @@ public class MovStockBrowser extends ModalJFrame {
 	private JButton getPrevButton(){
 		if(prevButton == null){
 			prevButton = new JButton("<");
-			//prevButton.setEnabled(false);
 			prevButton.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					pages--;
-					underLabel.setText("/ " + pages + " pages");
+					if(currentPage > 0){
+						currentPage--;
+						try {
+							moves = movBrowserManager.getMovementsPageable(currentPage, PAGE_SIZE);
+						} catch (OHServiceException ex) {
+							throw new RuntimeException(ex);
+						}
+						pagesCombo.setSelectedItem(currentPage);
+					}
 				}
 			});
 
@@ -283,17 +297,22 @@ public class MovStockBrowser extends ModalJFrame {
 		return prevButton;
 	}
 
-	private JComboBox<String> getPagesCombo(){
+	private JComboBox<Integer> getPagesCombo(){
 		if (pagesCombo == null){
 			pagesCombo = new JComboBox<>();
-			pagesCombo.addItem("2rtr");
-			pagesCombo.addItem("test");
+			pagesCombo.setSize(new Dimension(150, 25));
+			pages = (int) (model.getRowCount() / PAGE_SIZE);
+			for(int i=0; i<=pages ; i++){
+				pagesCombo.addItem(i);
+			}
+
 		}
 		return pagesCombo;
 	}
 
-	private JLabel getUnderLabel(){
+	private JLabel getUnderLabel() throws OHServiceException {
 		if (underLabel == null){
+			pages = (int) (model.getRowCount() / PAGE_SIZE);
 			underLabel = new JLabel("/ " + pages + " pages");
 			underLabel.setPreferredSize(new Dimension(60,30));
 		}
@@ -966,7 +985,6 @@ public class MovStockBrowser extends ModalJFrame {
 				}
 
 				if (moves != null)
-
 				{
 					model.fireTableDataChanged();
 					movTable.updateUI();
@@ -1213,9 +1231,10 @@ public class MovStockBrowser extends ModalJFrame {
 		public MovBrowserModel(Integer medicalCode, String medicalType, String ward, String movType, LocalDateTime movFrom, LocalDateTime movTo,
 						LocalDateTime lotPrepFrom, LocalDateTime lotPrepTo, LocalDateTime lotDueFrom, LocalDateTime lotDueTo) {
 			try {
-				moves = movBrowserManager.getMovements(medicalCode, medicalType, ward,
-								movType, movFrom, movTo, lotPrepFrom, lotPrepTo,
-								lotDueFrom, lotDueTo);
+//				moves = movBrowserManager.getMovements(medicalCode, medicalType, ward,
+//								movType, movFrom, movTo, lotPrepFrom, lotPrepTo,
+//								lotDueFrom, lotDueTo);
+				moves = movBrowserManager.getMovementsPageable(currentPage, PAGE_SIZE);
 			} catch (OHServiceException e) {
 				OHServiceExceptionUtil.showMessages(e);
 			}
@@ -1228,7 +1247,7 @@ public class MovStockBrowser extends ModalJFrame {
 			if (moves == null) {
 				return 0;
 			}
-			return moves.size();
+			return moves.getSize();
 		}
 
 		@Override
@@ -1248,7 +1267,7 @@ public class MovStockBrowser extends ModalJFrame {
 		 */
 		@Override
 		public Object getValueAt(int r, int c) {
-			Movement movement = moves.get(r);
+			Movement movement = moves.getContent().get(r);
 			Medical medical = movement.getMedical();
 			Lot lot = movement.getLot();
 			BigDecimal cost = lot.getCost();
