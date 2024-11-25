@@ -43,6 +43,7 @@ import org.isf.utils.exception.gui.OHServiceExceptionUtil;
 import org.isf.utils.jobjects.MessageDialog;
 import org.isf.utils.jobjects.ModalJFrame;
 import org.isf.mortuarystays.model.MortuaryStay;
+import org.isf.mortuarystays.gui.MortuaryStaysEdit.MortuaryStaysListener;
 
 /**
  * This class shows a list of wards.
@@ -51,9 +52,27 @@ import org.isf.mortuarystays.model.MortuaryStay;
  * @author Rick
  *
  */
-public class MortuaryStaysBrowser extends ModalJFrame {
+public class MortuaryStaysBrowser extends ModalJFrame implements MortuaryStaysListener{
     private static final long serialVersionUID = 1L;
 
+    @Override
+    public void mortuaryStaysInserted(AWTEvent e) {
+        mortuaryStaysList.add(0, mortuaryStay);
+        ((MortuaryStaysBrowser.MortuaryStaysBrowserModel) table.getModel()).fireTableDataChanged();
+        if (table.getRowCount() > 0) {
+            table.setRowSelectionInterval(0, 0);
+        }
+    }
+
+    @Override
+    public void mortuaryStaysUpdated(AWTEvent e) {
+        mortuaryStaysList.set(selectedrow, mortuaryStay);
+        ((MortuaryStaysBrowser.MortuaryStaysBrowserModel) table.getModel()).fireTableDataChanged();
+        table.updateUI();
+        if (table.getRowCount() > 0 && selectedrow > -1) {
+            table.setRowSelectionInterval(selectedrow, selectedrow);
+        }
+    }
 
     private int pfrmBase = 10;
     private int pfrmWidth = 8;
