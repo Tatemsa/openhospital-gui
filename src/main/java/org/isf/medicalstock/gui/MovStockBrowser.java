@@ -69,6 +69,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
+import org.bridj.cpp.std.list;
 import org.isf.generaldata.GeneralData;
 import org.isf.generaldata.MessageBundle;
 import org.isf.hospital.manager.HospitalBrowsingManager;
@@ -145,9 +146,10 @@ public class MovStockBrowser extends ModalJFrame {
 	private int totalQti;
 	private int pages = 0;
 	private int currentPage = 0;
-	private int PAGE_SIZE = 10;
+	private int PAGE_SIZE = 36;
 	private BigDecimal totalAmount;
 	private MovBrowserModel model;
+	private List<Movement> allMoves;
 	private Page<Movement> moves;
 	private String[] pColumns = {
 			MessageBundle.getMessage("angal.medicalstock.refno.col").toUpperCase(), // 1
@@ -231,6 +233,8 @@ public class MovStockBrowser extends ModalJFrame {
 	}
 
 	private JPanel getButtonPanel() throws OHServiceException {
+		allMoves = movBrowserManager.getMovements();
+		pages = allMoves.size()/PAGE_SIZE;
 		JPanel buttonPanel = new JPanel(new WrapLayout());
 		buttonPanel.add(getPrevButton());
 		buttonPanel.add(getPagesCombo());
@@ -256,11 +260,10 @@ public class MovStockBrowser extends ModalJFrame {
 	private JButton getNextButton(){
 		if(nextButton == null){
 			nextButton = new JButton(">");
-			//nextButton.setEnabled(false);
 			nextButton.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					if(currentPage < 6) {
+					if(currentPage < pages) {
 						currentPage++;
                         try {
                             moves = movBrowserManager.getMovementsPageable(currentPage, PAGE_SIZE);
@@ -268,6 +271,12 @@ public class MovStockBrowser extends ModalJFrame {
                             throw new RuntimeException(ex);
                         }
                         pagesCombo.setSelectedItem(currentPage);
+						if (moves != null)
+						{
+							model.fireTableDataChanged();
+							movTable.updateUI();
+						}
+						updateTotals();
 					}
 				}
 			});
@@ -289,6 +298,13 @@ public class MovStockBrowser extends ModalJFrame {
 							throw new RuntimeException(ex);
 						}
 						pagesCombo.setSelectedItem(currentPage);
+						if (moves != null)
+						{
+							model.fireTableDataChanged();
+							movTable.updateUI();
+
+						}
+						updateTotals();
 					}
 				}
 			});
@@ -301,18 +317,37 @@ public class MovStockBrowser extends ModalJFrame {
 		if (pagesCombo == null){
 			pagesCombo = new JComboBox<>();
 			pagesCombo.setSize(new Dimension(150, 25));
-			pages = (int) (model.getRowCount() / PAGE_SIZE);
-			for(int i=0; i<=pages ; i++){
+			pagesCombo.addActionListener(new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					currentPage = (Integer) pagesCombo.getSelectedItem();
+					if(pagesCombo.getItemCount() != 0){
+						try {
+							moves = movBrowserManager.getMovementsPageable(currentPage, PAGE_SIZE);
+						} catch (OHServiceException ex) {
+							throw new RuntimeException(ex);
+						}
+						pagesCombo.setSelectedItem(currentPage);
+						if (moves != null)
+						{
+							model.fireTableDataChanged();
+							movTable.updateUI();
+
+						}
+						updateTotals();
+					}
+				}
+			});
+			for(int i=0; i <= pages ; i++){
 				pagesCombo.addItem(i);
 			}
-
 		}
 		return pagesCombo;
 	}
 
 	private JLabel getUnderLabel() throws OHServiceException {
 		if (underLabel == null){
-			pages = (int) (model.getRowCount() / PAGE_SIZE);
 			underLabel = new JLabel("/ " + pages + " pages");
 			underLabel.setPreferredSize(new Dimension(60,30));
 		}
@@ -829,9 +864,7 @@ public class MovStockBrowser extends ModalJFrame {
 			jTableTotal.setCellSelectionEnabled(false);
 			jTableTotal.setColumnSelectionAllowed(false);
 
-			for (
-
-							int i = 0; i < pColumns.length; i++) {
+			for (int i = 0; i < pColumns.length; i++) {
 				jTableTotal.getColumnModel().getColumn(i).setCellRenderer(new EnabledTableCellRenderer());
 				jTableTotal.getColumnModel().getColumn(i).setPreferredWidth(pColumnWidth[i]);
 				if (!pColumnVisible[i]) {
@@ -1267,6 +1300,9 @@ public class MovStockBrowser extends ModalJFrame {
 		 */
 		@Override
 		public Object getValueAt(int r, int c) {
+			if (moves.getContent().isEmpty() || r >= moves.getContent().size()) {
+				return null;
+			}
 			Movement movement = moves.getContent().get(r);
 			Medical medical = movement.getMedical();
 			Lot lot = movement.getLot();
