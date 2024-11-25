@@ -158,7 +158,9 @@ public class MortuaryStaysBrowser extends ModalJFrame {
                     }else {
                         selectedrow = table.getSelectedRow();
                         mortuaryStay = (MortuaryStay) model.getValueAt(table.getSelectedRow(), -1);
-
+                        MortuaryStaysEdit editrecord = new MortuaryStaysEdit(myFrame, mortuaryStay, false);
+                        editrecord.addMortuaryStaysListener(MortuaryStaysBrowser.this);
+                        editrecord.setVisible(true);
                     }
                 }
             });
@@ -180,7 +182,9 @@ public class MortuaryStaysBrowser extends ModalJFrame {
 
                 public void actionPerformed(ActionEvent event) {
                     mortuaryStay = new MortuaryStay("","", "",0,0);	//operation will reference the new record
-
+                    MortuaryStaysEdit newrecord = new MortuaryStaysEdit(myFrame, mortuaryStay, true);
+                    newrecord.addMortuaryStaysListener(MortuaryStaysBrowser.this);
+                    newrecord.setVisible(true);
                 }
             });
         }
