@@ -318,7 +318,7 @@ public class MovStockBrowser extends ModalJFrame {
 					}
 
 					pagesCombo.setSelectedItem(currentPage + 1);
-					System.out.println(currentPage + 1);
+
 					if (moves != null) {
 						model.fireTableDataChanged();
 						movTable.updateUI();
