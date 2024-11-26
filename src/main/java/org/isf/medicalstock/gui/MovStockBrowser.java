@@ -146,6 +146,7 @@ public class MovStockBrowser extends ModalJFrame {
 	private int totalQti;
 	private int pages = 0;
 	private int currentPage = 0;
+	private int totalMoves = 0;
 	private int PAGE_SIZE = 36;
 	private BigDecimal totalAmount;
 	private MovBrowserModel model;
@@ -233,8 +234,6 @@ public class MovStockBrowser extends ModalJFrame {
 	}
 
 	private JPanel getButtonPanel() throws OHServiceException {
-		allMoves = movBrowserManager.getMovements();
-		pages = allMoves.size()/PAGE_SIZE;
 		JPanel buttonPanel = new JPanel(new WrapLayout());
 		buttonPanel.add(getPrevButton());
 		buttonPanel.add(getPagesCombo());
@@ -260,6 +259,11 @@ public class MovStockBrowser extends ModalJFrame {
 	private JButton getNextButton(){
 		if(nextButton == null){
 			nextButton = new JButton(">");
+			if (currentPage >= pages) {
+				nextButton.setEnabled(false);
+			} else {
+				nextButton.setEnabled(true);
+			}
 			nextButton.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
@@ -267,38 +271,52 @@ public class MovStockBrowser extends ModalJFrame {
 					String medicalTypeSelected = null;
 					String movementTypeSelected = null;
 					String wardSelected = null;
-					if(currentPage < 1) {
-						currentPage++;
-						if (medicalBox.isEnabled()) {
-							if (!(medicalBox.getSelectedItem() instanceof String)) {
-								medicalSelected = ((Medical) medicalBox
-									.getSelectedItem()).getCode();
-							}
-						} else {
-							if (!(medicalTypeBox.getSelectedItem() instanceof String)) {
-								medicalTypeSelected = ((MedicalType) medicalTypeBox
-									.getSelectedItem()).getCode();
-							}
-						}
-						if (!(movementTypeBox.getSelectedItem() instanceof String)) {
-							movementTypeSelected = ((MovementType) movementTypeBox
-								.getSelectedItem()).getCode();
-						} else {
-							movementTypeSelected = (String) movementTypeBox.getSelectedItem();
-							if (movementTypeSelected.equals(TEXT_ALL)) {
-								movementTypeSelected = null;
-							} else if (movementTypeSelected.equals(TEXT_ALLCHARGES)) {
-								movementTypeSelected = "+";
-							} else if (movementTypeSelected.equals(TEXT_ALLDISCHARGES)) {
-								movementTypeSelected = "-";
-							}
-						}
-						if (!(wardBox.getSelectedItem() instanceof String)) {
-							wardSelected = ((Ward) wardBox.getSelectedItem())
-								.getCode();
-						}
-                        try {
 
+					if (medicalBox.isEnabled()) {
+						if (!(medicalBox.getSelectedItem() instanceof String)) {
+							medicalSelected = ((Medical) medicalBox
+								.getSelectedItem()).getCode();
+						}
+					} else {
+						if (!(medicalTypeBox.getSelectedItem() instanceof String)) {
+							medicalTypeSelected = ((MedicalType) medicalTypeBox
+								.getSelectedItem()).getCode();
+						}
+					}
+					if (!(movementTypeBox.getSelectedItem() instanceof String)) {
+						movementTypeSelected = ((MovementType) movementTypeBox
+							.getSelectedItem()).getCode();
+					} else {
+						movementTypeSelected = (String) movementTypeBox.getSelectedItem();
+						if (movementTypeSelected.equals(TEXT_ALL)) {
+							movementTypeSelected = null;
+						} else if (movementTypeSelected.equals(TEXT_ALLCHARGES)) {
+							movementTypeSelected = "+";
+						} else if (movementTypeSelected.equals(TEXT_ALLDISCHARGES)) {
+							movementTypeSelected = "-";
+						}
+					}
+					if (!(wardBox.getSelectedItem() instanceof String)) {
+						wardSelected = ((Ward) wardBox.getSelectedItem())
+							.getCode();
+					}
+
+					try {
+						totalMoves = movBrowserManager.getMovements(
+							medicalSelected, medicalTypeSelected, wardSelected, movementTypeSelected,
+							movDateFrom.getDateStartOfDay(), movDateTo.getDateEndOfDay(), null, null,
+							lotDueFrom.getDateStartOfDay(), lotDueTo.getDateStartOfDay()
+						).size();
+					} catch (OHServiceException ex) {
+						throw new RuntimeException(ex);
+					}
+
+					pages = (int) Math.ceil((double) totalMoves / PAGE_SIZE);
+
+					if(currentPage < pages) {
+						currentPage++;
+
+                        try {
                             moves = movBrowserManager.getMovements(medicalSelected, medicalTypeSelected, wardSelected, movementTypeSelected, movDateFrom.getDateStartOfDay(), movDateTo.getDateEndOfDay(),
 								null, null, lotDueFrom.getDateStartOfDay(), lotDueTo.getDateStartOfDay(), currentPage, PAGE_SIZE);
                         } catch (OHServiceException ex) {
@@ -311,6 +329,12 @@ public class MovStockBrowser extends ModalJFrame {
 							movTable.updateUI();
 						}
 						updateTotals();
+					}
+
+					if (currentPage >= pages) {
+						nextButton.setEnabled(false);
+					} else {
+						nextButton.setEnabled(true);
 					}
 				}
 			});
@@ -354,12 +378,13 @@ public class MovStockBrowser extends ModalJFrame {
 								movementTypeSelected = "-";
 							}
 						}
+
 						if (!(wardBox.getSelectedItem() instanceof String)) {
 							wardSelected = ((Ward) wardBox.getSelectedItem())
 								.getCode();
 						}
-						try {
 
+						try {
 							moves = movBrowserManager.getMovements(medicalSelected, medicalTypeSelected, wardSelected, movementTypeSelected, movDateFrom.getDateStartOfDay(), movDateTo.getDateEndOfDay(),
 								null, null, lotDueFrom.getDateStartOfDay(), lotDueTo.getDateStartOfDay(), currentPage, PAGE_SIZE);
 						} catch (OHServiceException ex) {
@@ -1331,9 +1356,18 @@ public class MovStockBrowser extends ModalJFrame {
 		public MovBrowserModel(Integer medicalCode, String medicalType, String ward, String movType, LocalDateTime movFrom, LocalDateTime movTo,
 						LocalDateTime lotPrepFrom, LocalDateTime lotPrepTo, LocalDateTime lotDueFrom, LocalDateTime lotDueTo) {
 			try {
+
+				totalMoves = movBrowserManager.getMovements(medicalCode, medicalType, ward,
+					movType, movFrom, movTo, lotPrepFrom, lotPrepTo, lotDueFrom, lotDueTo).size();
+				pages = (int) Math.ceil((double) totalMoves / PAGE_SIZE);
+				currentPage = 0;
+				if (currentPage >= pages) {
+					nextButton.setEnabled(false);
+				}
+
 				moves = movBrowserManager.getMovements(medicalCode, medicalType, ward,
 								movType, movFrom, movTo, lotPrepFrom, lotPrepTo,
-								lotDueFrom, lotDueTo, currentPage + 1, PAGE_SIZE);
+								lotDueFrom, lotDueTo, currentPage, PAGE_SIZE);
 			} catch (OHServiceException e) {
 				OHServiceExceptionUtil.showMessages(e);
 			}
