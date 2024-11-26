@@ -40,7 +40,7 @@ import javax.swing.JTextField;
 
 import org.isf.generaldata.MessageBundle;
 import org.isf.menu.manager.Context;
-import org.isf.mortuarystays.manager.MortuaryStaysBrowserManager;
+import org.isf.mortuarystays.manager.MortuaryStayManager;
 import org.isf.mortuarystays.model.MortuaryStay;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.gui.OHServiceExceptionUtil;
@@ -90,7 +90,7 @@ public class MortuaryStaysEdit extends JDialog {
         }
     }
 
-    private MortuaryStaysBrowserManager mortuaryStaysBrowserManager = Context.getApplicationContext().getBean(MortuaryStaysBrowserManager.class);
+    private MortuaryStayManager mortuaryStayManager = Context.getApplicationContext().getBean(MortuaryStayManager.class);
 
     private JPanel jContentPane;
     private JPanel dataPanel;
@@ -296,7 +296,7 @@ public class MortuaryStaysEdit extends JDialog {
                     }
 
                     try {
-                        if (mortuaryStaysBrowserManager.isCodePresent(code)) {
+                        if (mortuaryStayManager.isCodePresent(code)) {
                             MessageDialog.error(this, "angal.mortuarystays.codealreadyinuse.msg");
                             return;
                         }
@@ -343,14 +343,14 @@ public class MortuaryStaysEdit extends JDialog {
                 mortuaryStay.setDescription(desc);
                 mortuaryStay.setName(name);
                 mortuaryStay.setCode(codeTextField.getText());
-                mortuaryStay.setDaysMin(minD);
-                mortuaryStay.setDaysMax(maxD);
+                mortuaryStay.setMinDays(minD);
+                mortuaryStay.setMaxDays(maxD);
 
                 boolean result = false;
                 MortuaryStay savedMortuaryStay;
                 if (insert) { // inserting
                     try {
-                        savedMortuaryStay = mortuaryStaysBrowserManager.add(mortuaryStay);
+                        savedMortuaryStay = mortuaryStayManager.add(mortuaryStay);
                         if (savedMortuaryStay != null) {
                             result = true;
                         }
@@ -362,7 +362,7 @@ public class MortuaryStaysEdit extends JDialog {
                     }
                 } else {
                     try { // updating
-                        savedMortuaryStay = mortuaryStaysBrowserManager.update(mortuaryStay);
+                        savedMortuaryStay = mortuaryStayManager.update(mortuaryStay);
                         if (savedMortuaryStay != null) {
                             result = true;
                         }
@@ -439,7 +439,7 @@ public class MortuaryStaysEdit extends JDialog {
         if (minDTextField == null) {
             minDTextField = new VoLimitedTextField(50, 20);
             if (!insert) {
-                minDTextField.setText(String.valueOf(mortuaryStay.getDaysMin()));
+                minDTextField.setText(String.valueOf(mortuaryStay.getMinDays()));
             }
         }
         return minDTextField;
@@ -454,7 +454,7 @@ public class MortuaryStaysEdit extends JDialog {
         if (maxDTextField == null) {
             maxDTextField = new VoLimitedTextField(50, 20);
             if (!insert) {
-                maxDTextField.setText(String.valueOf(mortuaryStay.getDaysMax()));
+                maxDTextField.setText(String.valueOf(mortuaryStay.getMaxDays()));
             }
         }
         return maxDTextField;
