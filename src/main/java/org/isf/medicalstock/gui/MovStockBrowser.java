@@ -154,22 +154,22 @@ public class MovStockBrowser extends ModalJFrame {
 	private List<Movement> allMoves;
 	private List<Movement> moves;
 	private final String[] pColumns = {
-		MessageBundle.getMessage("angal.medicalstock.refno.col").toUpperCase(), // 1
-		MessageBundle.getMessage("angal.common.date.txt").toUpperCase(), // 2
-		MessageBundle.getMessage("angal.medicalstock.category.col").toUpperCase(), // 3
-		MessageBundle.getMessage("angal.common.type.txt").toUpperCase(), // 3
-		MessageBundle.getMessage("angal.common.ward.txt").toUpperCase(), // 4
-		MessageBundle.getMessage("angal.common.qty.txt").toUpperCase(), // 5
-		MessageBundle.getMessage("angal.common.code.txt").toUpperCase(), // 6
-		MessageBundle.getMessage("angal.medicalstock.pharmaceutical.col").toUpperCase(), // 7
-		MessageBundle.getMessage("angal.medicalstock.medtype.col").toUpperCase(), // 8
-		MessageBundle.getMessage("angal.medicalstock.lot.col").toUpperCase(), // 9
-		MessageBundle.getMessage("angal.medicalstock.prepdate.col").toUpperCase(), // 10
-		MessageBundle.getMessage("angal.medicalstock.duedate.col").toUpperCase(), // 11
-		MessageBundle.getMessage("angal.medicalstock.origin.col").toUpperCase(), // 12
-		MessageBundle.getMessage("angal.medicalstock.cost.col").toUpperCase(), // 13
-		MessageBundle.getMessage("angal.common.total.txt").toUpperCase(), // 14
-		MessageBundle.getMessage("angal.common.userid").toUpperCase() // 15
+		MessageBundle.getMessage("angal.medicalstock.refno.col").toUpperCase(),
+		MessageBundle.getMessage("angal.common.date.txt").toUpperCase(),
+		MessageBundle.getMessage("angal.medicalstock.category.col").toUpperCase(),
+		MessageBundle.getMessage("angal.common.type.txt").toUpperCase(),
+		MessageBundle.getMessage("angal.common.ward.txt").toUpperCase(),
+		MessageBundle.getMessage("angal.common.qty.txt").toUpperCase(),
+		MessageBundle.getMessage("angal.common.code.txt").toUpperCase(),
+		MessageBundle.getMessage("angal.medicalstock.pharmaceutical.col").toUpperCase(),
+		MessageBundle.getMessage("angal.medicalstock.medtype.col").toUpperCase(),
+		MessageBundle.getMessage("angal.medicalstock.lot.col").toUpperCase(),
+		MessageBundle.getMessage("angal.medicalstock.prepdate.col").toUpperCase(),
+		MessageBundle.getMessage("angal.medicalstock.duedate.col").toUpperCase(),
+		MessageBundle.getMessage("angal.medicalstock.origin.col").toUpperCase(),
+		MessageBundle.getMessage("angal.medicalstock.cost.col").toUpperCase(),
+		MessageBundle.getMessage("angal.common.total.txt").toUpperCase(),
+		MessageBundle.getMessage("angal.common.userid").toUpperCase()
 	};
 	private final boolean[] pColumnBold = { true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false };
 	private final int[] columnAlignment = { SwingConstants.LEFT, SwingConstants.CENTER, SwingConstants.CENTER, SwingConstants.CENTER, SwingConstants.CENTER,
@@ -266,11 +266,9 @@ public class MovStockBrowser extends ModalJFrame {
 				String movementTypeSelected = null;
 				String wardSelected = null;
 
-				if (medicalBox.isEnabled()) {
-					if (!(medicalBox.getSelectedItem() instanceof String)) {
-						medicalSelected = ((Medical) medicalBox
-							.getSelectedItem()).getCode();
-					}
+				if (medicalBox.isEnabled() && !(medicalBox.getSelectedItem() instanceof String)) {
+					medicalSelected = ((Medical) medicalBox
+						.getSelectedItem()).getCode();
 				} else {
 					if (!(medicalTypeBox.getSelectedItem() instanceof String)) {
 						medicalTypeSelected = ((MedicalType) medicalTypeBox
@@ -306,7 +304,7 @@ public class MovStockBrowser extends ModalJFrame {
 				}
 
 				pages = (int) Math.ceil((double) totalMoves / PAGE_SIZE);
-				underLabel.setText("/ " + pages + " pages");
+				underLabel.setText("/ " + pages + MessageBundle.getMessage("angal.common.pages.text"));
 				if (currentPage < pages -1) {
 					currentPage++;
 					try {
@@ -345,11 +343,9 @@ public class MovStockBrowser extends ModalJFrame {
 				String movementTypeSelected = null;
 				String wardSelected = null;
 
-				if (medicalBox.isEnabled()) {
-					if (!(medicalBox.getSelectedItem() instanceof String)) {
-						medicalSelected = ((Medical) medicalBox
-							.getSelectedItem()).getCode();
-					}
+				if (medicalBox.isEnabled() && !(medicalBox.getSelectedItem() instanceof String)) {
+					medicalSelected = ((Medical) medicalBox
+						.getSelectedItem()).getCode();
 				} else {
 					if (!(medicalTypeBox.getSelectedItem() instanceof String)) {
 						medicalTypeSelected = ((MedicalType) medicalTypeBox
