@@ -74,20 +74,20 @@ public class MortuaryStaysBrowser extends ModalJFrame implements MortuaryStaysLi
         }
     }
 
-    private int pfrmBase = 10;
-    private int pfrmWidth = 8;
-    private int pfrmHeight = 6;
+    private final int pfrmBase = 10;
+    private final int pfrmWidth = 8;
+    private final int pfrmHeight = 6;
     private int pfrmBordX;
     private int pfrmBordY;
-    private JPanel jContentPane = null;
-    private JPanel jButtonPanel = null;
-    private JButton jEditButton = null;
-    private JButton jNewButton = null;
-    private JButton jDeleteButton = null;
-    private JButton jCloseButton = null;
-    private JScrollPane jScrollPane = null;
-    private JTable table = null;
-    private DefaultTableModel model = null;
+    private JPanel jContentPane;
+    private JPanel jButtonPanel;
+    private JButton jEditButton;
+    private JButton jNewButton;
+    private JButton jDeleteButton;
+    private JButton jCloseButton;
+    private JScrollPane jScrollPane;
+    private JTable table;
+    private DefaultTableModel model;
     private String[] pColums = { MessageBundle.getMessage("angal.mortuarystays.code.col"),
             MessageBundle.getMessage("angal.mortuarystays.name.col"),
             MessageBundle.getMessage("angal.mortuarystays.description.col"),
@@ -112,9 +112,7 @@ public class MortuaryStaysBrowser extends ModalJFrame implements MortuaryStaysLi
     }
 
     /**
-     * This method initializes this
-     *
-     * @return void
+     * This method initializes this Window
      */
     private void initialize() {
         this.setTitle(MessageBundle.getMessage("angal.mortuarystays.mortuarybrowser.title"));
@@ -151,10 +149,10 @@ public class MortuaryStaysBrowser extends ModalJFrame implements MortuaryStaysLi
     private JPanel getJButtonPanel() {
         if (jButtonPanel == null) {
             jButtonPanel = new JPanel();
-            jButtonPanel.add(getJNewButton(), null);
-            jButtonPanel.add(getJEditButton(), null);
-            jButtonPanel.add(getJDeleteButton(), null);
-            jButtonPanel.add(getJCloseButton(), null);
+            jButtonPanel.add(getJNewButton());
+            jButtonPanel.add(getJEditButton());
+            jButtonPanel.add(getJDeleteButton());
+            jButtonPanel.add(getJCloseButton());
         }
         return jButtonPanel;
     }
@@ -169,12 +167,10 @@ public class MortuaryStaysBrowser extends ModalJFrame implements MortuaryStaysLi
             jEditButton = new JButton();
             jEditButton.setText(MessageBundle.getMessage("angal.common.edit"));
             jEditButton.setMnemonic(MessageBundle.getMnemonic("angal.common.edit.btn.key"));
-            jEditButton.addActionListener(new ActionListener() {
-
-                public void actionPerformed(ActionEvent event) {
+            jEditButton.addActionListener(actionEvent -> {
                     if (table.getSelectedRow() < 0) {
                         MessageDialog.error(null, "angal.common.pleaseselectarow.msg");
-                    }else {
+                    } else {
                         selectedrow = table.getSelectedRow();
                         mortuaryStay = (MortuaryStay) model.getValueAt(table.getSelectedRow(), -1);
                         MortuaryStaysEdit editrecord = new MortuaryStaysEdit(myFrame, mortuaryStay, false);
@@ -182,7 +178,7 @@ public class MortuaryStaysBrowser extends ModalJFrame implements MortuaryStaysLi
                         editrecord.setVisible(true);
                     }
                 }
-            });
+            );
         }
         return jEditButton;
     }
@@ -197,15 +193,12 @@ public class MortuaryStaysBrowser extends ModalJFrame implements MortuaryStaysLi
             jNewButton = new JButton();
             jNewButton = new JButton(MessageBundle.getMessage("angal.common.new.btn"));
             jNewButton.setMnemonic(MessageBundle.getMnemonic("angal.common.new.btn.key"));
-            jNewButton.addActionListener(new ActionListener() {
-
-                public void actionPerformed(ActionEvent event) {
-                    mortuaryStay = new MortuaryStay("","", "",0,0);	//operation will reference the new record
+            jNewButton.addActionListener(actionEvent -> {
+                    mortuaryStay = new MortuaryStay("","", "",0,0);
                     MortuaryStaysEdit newrecord = new MortuaryStaysEdit(myFrame, mortuaryStay, true);
                     newrecord.addMortuaryStaysListener(MortuaryStaysBrowser.this);
                     newrecord.setVisible(true);
-                }
-            });
+                });
         }
         return jNewButton;
     }
@@ -252,11 +245,7 @@ public class MortuaryStaysBrowser extends ModalJFrame implements MortuaryStaysLi
             jCloseButton = new JButton();
             jCloseButton = new JButton(MessageBundle.getMessage("angal.common.close.btn"));
             jCloseButton.setMnemonic(MessageBundle.getMnemonic("angal.common.close.btn.key"));
-            jCloseButton.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent arg0) {
-                    dispose();
-                }
-            });
+            jCloseButton.addActionListener(actionEvent -> dispose());
         }
         return jCloseButton;
     }
