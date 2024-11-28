@@ -198,7 +198,7 @@ public class MortuaryStaysBrowser extends ModalJFrame implements MortuaryStaysLi
                     MortuaryStaysEdit newrecord = new MortuaryStaysEdit(myFrame, mortuaryStay, true);
                     newrecord.addMortuaryStaysListener(MortuaryStaysBrowser.this);
                     newrecord.setVisible(true);
-                });
+            });
         }
         return jNewButton;
     }
