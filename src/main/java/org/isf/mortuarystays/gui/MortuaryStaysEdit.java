@@ -119,7 +119,7 @@ public class MortuaryStaysEdit extends JDialog {
     public MortuaryStaysEdit(JFrame parent, MortuaryStay old, boolean inserting) {
         super(parent, true);
         insert = inserting;
-        mortuaryStay = old;        //operation will be used for every operation
+        mortuaryStay = old;
         initialize();
     }
 
@@ -306,7 +306,7 @@ public class MortuaryStaysEdit extends JDialog {
 
                 }
                 name = nameTextField.getText().trim();
-                if(name.isEmpty()){
+                if (name.isEmpty()){
                     MessageDialog.error(this, "angal.common.pleaseinsertavalidname.msg");
                     return;
                 }
@@ -335,7 +335,7 @@ public class MortuaryStaysEdit extends JDialog {
                     MessageDialog.error(this, "angal.mortuarystays.insertavalidmaxdnumber.msg");
                     return;
                 }
-                if(minD >= maxD){
+                if (minD >= maxD){
                     MessageDialog.error(this, "angal.mortuarystays.insertcoherencemaxminvalues.msg");
                     return;
                 }
@@ -375,8 +375,7 @@ public class MortuaryStaysEdit extends JDialog {
                 }
                 if (!result) {
                     MessageDialog.error(null, "angal.common.datacouldnotbesaved.msg");
-                }
-                else {
+                } else {
                     dispose();
                 }
             });
