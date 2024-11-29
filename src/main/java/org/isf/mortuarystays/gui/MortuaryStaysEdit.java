@@ -252,8 +252,8 @@ public class MortuaryStaysEdit extends JDialog {
     private JPanel getButtonPanel() {
         if (buttonPanel == null) {
             buttonPanel = new JPanel();
-            buttonPanel.add(getOkButton(), null);
-            buttonPanel.add(getCancelButton(), null);
+            buttonPanel.add(getOkButton());
+            buttonPanel.add(getCancelButton());
         }
         return buttonPanel;
     }
@@ -301,7 +301,7 @@ public class MortuaryStaysEdit extends JDialog {
                             return;
                         }
                     } catch (OHServiceException e) {
-                        throw new RuntimeException(e);
+                        OHServiceExceptionUtil.showMessages(e);
                     }
 
                 }
@@ -366,8 +366,8 @@ public class MortuaryStaysEdit extends JDialog {
                         if (savedMortuaryStay != null) {
                             result = true;
                         }
-                    } catch (OHServiceException ex) {
-                        OHServiceExceptionUtil.showMessages(ex);
+                    } catch (OHServiceException e) {
+                        OHServiceExceptionUtil.showMessages(e);
                     }
                     if (result) {
                         fireMortuaryStaysUpdated();
