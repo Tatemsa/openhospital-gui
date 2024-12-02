@@ -52,7 +52,7 @@ import org.isf.mortuarystays.gui.MortuaryStaysEdit.MortuaryStaysListener;
  * @author Rick
  *
  */
-public class MortuaryStaysBrowser extends ModalJFrame implements MortuaryStaysListener{
+public class MortuaryStaysBrowser extends ModalJFrame implements MortuaryStaysListener {
     private static final long serialVersionUID = 1L;
 
     @Override
