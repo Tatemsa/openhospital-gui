@@ -283,7 +283,7 @@ public class MortuaryStaysEdit extends JDialog {
             okButton.setMnemonic(MessageBundle.getMnemonic("angal.common.ok.btn.key"));
 
             okButton.addActionListener(actionEvent -> {
-                if(insert){
+                if (insert){
                     code = codeTextField.getText().trim();
                     if (code.isEmpty()) {
                         MessageDialog.error(this, "angal.common.pleaseinsertacode.msg");
@@ -303,8 +303,8 @@ public class MortuaryStaysEdit extends JDialog {
                     } catch (OHServiceException e) {
                         OHServiceExceptionUtil.showMessages(e);
                     }
-
                 }
+
                 name = nameTextField.getText().trim();
                 if (name.isEmpty()){
                     MessageDialog.error(this, "angal.common.pleaseinsertavalidname.msg");

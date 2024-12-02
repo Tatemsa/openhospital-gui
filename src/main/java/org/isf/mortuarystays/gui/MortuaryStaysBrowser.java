@@ -218,13 +218,17 @@ public class MortuaryStaysBrowser extends ModalJFrame implements MortuaryStaysLi
                     MessageDialog.info(this, "angal.common.pleaseselectarow.msg");
                 } else {
                     MortuaryStay mortuaryStays = (MortuaryStay) model.getValueAt(table.getSelectedRow(), -1);
-                    int answer = MessageDialog.yesNo(this, "angal.mortuarystays.deletemortuarystays.fmt.msg", mortuaryStays.getDescription());
+                    int answer = MessageDialog.yesNo(this, "angal.mortuarystays.deletemortuarystays.fmt.msg", mortuaryStays.getName());
                     try {
                         if (answer == JOptionPane.YES_OPTION) {
-                            mortuaryStaysManager.delete(mortuaryStays);
-                            mortuaryStaysList.remove(table.getSelectedRow());
-                            model.fireTableDataChanged();
-                            table.updateUI();
+                            MortuaryStay mortuaryStayDeleted = mortuaryStaysManager.delete(mortuaryStays);
+                            if(mortuaryStayDeleted != null) {
+                                mortuaryStaysList.remove(table.getSelectedRow());
+                                model.fireTableDataChanged();
+                                table.updateUI();
+                            } else {
+                                MessageDialog.info(this, "angal.common.suppressionfailed.msg");
+                            }
                         }
                     } catch (OHServiceException e) {
                         OHServiceExceptionUtil.showMessages(e);
