@@ -219,6 +219,7 @@ public class MovStockBrowser extends ModalJFrame {
 
 	private JPanel getContentpane() throws OHServiceException {
 		JPanel contentPane = new JPanel(new BorderLayout());
+		contentPane.add(getPaginatePanel(), BorderLayout.NORTH);
 		contentPane.add(getFilterPanel(), BorderLayout.WEST);
 		contentPane.add(getTablesPanel(), BorderLayout.CENTER);
 		contentPane.add(getButtonPanel(), BorderLayout.SOUTH);
@@ -233,12 +234,17 @@ public class MovStockBrowser extends ModalJFrame {
 		return GeneralData.AUTOMATICLOT_IN;
 	}
 
+	private JPanel getPaginatePanel() throws OHServiceException {
+		JPanel paginatePanel = new JPanel(new WrapLayout());
+		paginatePanel.add(getPrevButton());
+		paginatePanel.add(getPagesCombo());
+		paginatePanel.add(getUnderLabel());
+		paginatePanel.add(getNextButton());
+		return paginatePanel;
+	}
+
 	private JPanel getButtonPanel() throws OHServiceException {
 		JPanel buttonPanel = new JPanel(new WrapLayout());
-		buttonPanel.add(getPrevButton());
-		buttonPanel.add(getPagesCombo());
-		buttonPanel.add(getUnderLabel());
-		buttonPanel.add(getNextButton());
 		if (MainMenu.checkUserGrants("btnpharmstockcharge")) {
 			buttonPanel.add(getChargeButton());
 		}
